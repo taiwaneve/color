@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -17,10 +18,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statusText: TextView
     private lateinit var colorTextView: TextView
     private lateinit var btnStart: Button
-    private lateinit var btnRed: Button
-    private lateinit var btnYellow: Button
-    private lateinit var btnBlue: Button
-    private lateinit var btnGreen: Button
+
+    private lateinit var blockRed: View
+    private lateinit var blockYellow: View
+    private lateinit var blockBlue: View
+    private lateinit var blockGreen: View
 
     private val colors = listOf(Color.RED, Color.YELLOW, Color.BLUE, Color.GREEN)
     private val sequence = mutableListOf<Int>()
@@ -30,49 +32,54 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main) // ✅ 使用 XML
+        setContentView(R.layout.activity_main)
 
         // 取得 UI 元件
         colorTextView = findViewById(R.id.colorTextView)
         statusText = findViewById(R.id.statusText)
         btnStart = findViewById(R.id.btnStart)
-        btnRed = findViewById(R.id.btnRed)
-        btnYellow = findViewById(R.id.btnYellow)
-        btnBlue = findViewById(R.id.btnBlue)
-        btnGreen = findViewById(R.id.btnGreen)
+
+        blockRed = findViewById(R.id.blockRed)
+        blockYellow = findViewById(R.id.blockYellow)
+        blockBlue = findViewById(R.id.blockBlue)
+        blockGreen = findViewById(R.id.blockGreen)
 
         // 初始化模組
         colorDisplay = ColorDisplay(colorTextView)
         inputHandler = InputHandler(sequence, ::onCorrect, ::onWrong)
 
-        // 設定按鈕事件（修正 return 錯誤）
-        btnRed.setOnClickListener {
+        // 色塊點擊事件（加入閃爍效果）
+        blockRed.setOnClickListener {
             if (isPlayingSequence) return@setOnClickListener
+            flashBlock(blockRed)
             inputHandler.checkInput(Color.RED)
         }
-        btnYellow.setOnClickListener {
+        blockYellow.setOnClickListener {
             if (isPlayingSequence) return@setOnClickListener
+            flashBlock(blockYellow)
             inputHandler.checkInput(Color.YELLOW)
         }
-        btnBlue.setOnClickListener {
+        blockBlue.setOnClickListener {
             if (isPlayingSequence) return@setOnClickListener
+            flashBlock(blockBlue)
             inputHandler.checkInput(Color.BLUE)
         }
-        btnGreen.setOnClickListener {
+        blockGreen.setOnClickListener {
             if (isPlayingSequence) return@setOnClickListener
+            flashBlock(blockGreen)
             inputHandler.checkInput(Color.GREEN)
         }
 
         btnStart.setOnClickListener { startGame() }
 
-        setGameButtonsEnabled(false)
+        setGameBlocksEnabled(false)
     }
 
-    private fun setGameButtonsEnabled(enabled: Boolean) {
-        btnRed.isEnabled = enabled
-        btnYellow.isEnabled = enabled
-        btnBlue.isEnabled = enabled
-        btnGreen.isEnabled = enabled
+    private fun setGameBlocksEnabled(enabled: Boolean) {
+        blockRed.isEnabled = enabled
+        blockYellow.isEnabled = enabled
+        blockBlue.isEnabled = enabled
+        blockGreen.isEnabled = enabled
     }
 
     private fun startGame() {
@@ -80,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         level = 1
         colorDisplay.resetScore()
         statusText.text = "遊戲開始！"
-        btnStart.isEnabled = false
+        btnStart.visibility = View.GONE // ✅ 開始後隱藏按鈕
         nextLevel()
     }
 
@@ -92,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun playSequence() {
         isPlayingSequence = true
-        setGameButtonsEnabled(false)
+        setGameBlocksEnabled(false)
 
         var delay = 0L
         val stepDuration = 800L
@@ -113,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
         handler.postDelayed({
             isPlayingSequence = false
-            setGameButtonsEnabled(true)
+            setGameBlocksEnabled(true)
             statusText.text = "第 $level 關，請依序輸入顏色！"
         }, delay)
     }
@@ -122,14 +129,22 @@ class MainActivity : AppCompatActivity() {
         colorDisplay.addScore(10)
         statusText.text = "正確！分數：${colorDisplay.score}，進入下一關..."
         level++
-        setGameButtonsEnabled(false)
+        setGameBlocksEnabled(false)
         handler.postDelayed({ nextLevel() }, 600L)
     }
 
     private fun onWrong() {
-        statusText.text = "答錯了！最終分數：${colorDisplay.score}"
-        setGameButtonsEnabled(false)
-        btnStart.isEnabled = true
+        statusText.text = "答錯了！最終分數：${colorDisplay.score}\n再玩一次，按下開始遊戲！"
+        setGameBlocksEnabled(false)
+        btnStart.visibility = View.VISIBLE // ✅ 遊戲結束後顯示按鈕
         colorDisplay.showColor(Color.LTGRAY)
+    }
+
+    // 色塊閃爍效果
+    private fun flashBlock(block: View) {
+        block.alpha = 0.5f
+        handler.postDelayed({
+            block.alpha = 1f
+        }, 200L)
     }
 }
