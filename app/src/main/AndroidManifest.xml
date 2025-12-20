@@ -8,13 +8,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
-        <activity android:name=".MainActivity"
+
+        <!-- 主選單 Activity (唯一 LAUNCHER) -->
+        <activity
+            android:name=".MenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- 遊戲 Activity -->
+        <activity android:name=".MainActivity" />
+
+        <!-- 商城 Activity -->
+        <activity android:name=".ShopActivity" />
+
     </application>
 
 </manifest>

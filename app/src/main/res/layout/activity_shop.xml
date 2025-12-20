@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#222222">
+
+    <TextView
+        android:id="@+id/shopTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="商城"
+        android:textSize="24sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- 範例商品 -->
+    <Button
+        android:id="@+id/btnItem1"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="商品 1 - 100 分數"
+        android:layout_margin="8dp"/>
+
+    <Button
+        android:id="@+id/btnItem2"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="商品 2 - 200 分數"
+        android:layout_margin="8dp"/>
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="返回主選單"
+        android:layout_marginTop="24dp"/>
+</LinearLayout>
