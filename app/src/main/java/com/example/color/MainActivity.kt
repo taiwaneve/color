@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statusText: TextView
     private lateinit var colorTextView: TextView
     private lateinit var btnStart: Button
+    private lateinit var livesText: TextView
 
     private lateinit var blockRed: View
     private lateinit var blockYellow: View
@@ -31,17 +32,25 @@ class MainActivity : AppCompatActivity() {
     private var isPlayingSequence = false
     private val handler = Handler(Looper.getMainLooper())
 
-    // 題目計數器
+    // 遊戲狀態
     private var questionCount = 0
+    private var maxQuestions = 10
+    private var lives = 1
+    private var difficulty = "hard"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // 接收難度參數（若未提供，預設困難）
+        difficulty = intent.getStringExtra("difficulty") ?: "hard"
+        applyDifficultyDefaults()
+
         // 取得 UI 元件
         colorTextView = findViewById(R.id.colorTextView)
         statusText = findViewById(R.id.statusText)
         btnStart = findViewById(R.id.btnStart)
+        livesText = findViewById(R.id.livesText)
 
         blockRed = findViewById(R.id.blockRed)
         blockYellow = findViewById(R.id.blockYellow)
@@ -52,31 +61,25 @@ class MainActivity : AppCompatActivity() {
         colorDisplay = ColorDisplay(colorTextView)
         inputHandler = InputHandler(sequence, ::onCorrect, ::onWrong)
 
-        // 色塊點擊事件（加入閃爍效果）
-        blockRed.setOnClickListener {
-            if (isPlayingSequence) return@setOnClickListener
-            flashBlock(blockRed)
-            inputHandler.checkInput(Color.RED)
-        }
-        blockYellow.setOnClickListener {
-            if (isPlayingSequence) return@setOnClickListener
-            flashBlock(blockYellow)
-            inputHandler.checkInput(Color.YELLOW)
-        }
-        blockBlue.setOnClickListener {
-            if (isPlayingSequence) return@setOnClickListener
-            flashBlock(blockBlue)
-            inputHandler.checkInput(Color.BLUE)
-        }
-        blockGreen.setOnClickListener {
-            if (isPlayingSequence) return@setOnClickListener
-            flashBlock(blockGreen)
-            inputHandler.checkInput(Color.GREEN)
-        }
+        // 色塊點擊事件
+        blockRed.setOnClickListener { if (!isPlayingSequence) { flashBlock(blockRed); inputHandler.checkInput(Color.RED) } }
+        blockYellow.setOnClickListener { if (!isPlayingSequence) { flashBlock(blockYellow); inputHandler.checkInput(Color.YELLOW) } }
+        blockBlue.setOnClickListener { if (!isPlayingSequence) { flashBlock(blockBlue); inputHandler.checkInput(Color.BLUE) } }
+        blockGreen.setOnClickListener { if (!isPlayingSequence) { flashBlock(blockGreen); inputHandler.checkInput(Color.GREEN) } }
 
         btnStart.setOnClickListener { startGame() }
 
         setGameBlocksEnabled(false)
+        btnStart.visibility = View.VISIBLE
+        livesText.visibility = View.GONE
+    }
+
+    private fun applyDifficultyDefaults() {
+        when (difficulty) {
+            "easy" -> { maxQuestions = 5; lives = 5 }
+            "normal" -> { maxQuestions = 7; lives = 3 }
+            "hard" -> { maxQuestions = 10; lives = 1 }
+        }
     }
 
     private fun setGameBlocksEnabled(enabled: Boolean) {
@@ -86,18 +89,19 @@ class MainActivity : AppCompatActivity() {
         blockGreen.isEnabled = enabled
     }
 
-    private var questionCount = 0
-    private var maxQuestions = 10
-    private var lives = 3
-    private var difficulty = "hard" // 預設困難
-
     private fun startGame() {
+        applyDifficultyDefaults()
+
         sequence.clear()
         level = 1
         questionCount = 0
         colorDisplay.resetScore()
-        statusText.text = "遊戲開始！"
+        statusText.text = "遊戲開始！（難度：$difficulty）"
+
         btnStart.visibility = View.GONE
+        livesText.visibility = View.VISIBLE
+        livesText.text = "生命值：$lives"
+
         nextLevel()
     }
 
@@ -135,33 +139,34 @@ class MainActivity : AppCompatActivity() {
         }, delay)
     }
 
+    private fun replayCurrentQuestion() {
+        inputHandler.reset()
+        playSequence()
+    }
+
     private fun onCorrect() {
         questionCount++
 
-        // 分數規則
-        val points = when (questionCount) {
-            in 1..3 -> 10
-            in 4..6 -> 15
-            in 7..10 -> 20
-            else -> 10
+        val points = when (difficulty) {
+            "easy" -> 5
+            "normal" -> if (questionCount in 1..3) 5 else 10
+            "hard" -> when (questionCount) {
+                in 1..3 -> 10
+                in 4..6 -> 15
+                in 7..10 -> 20
+                else -> 10
+            }
+            else -> 5
         }
 
         colorDisplay.addScore(points)
         statusText.text = "正確！分數：${colorDisplay.score}"
 
-        if (questionCount == 10) {
-            // 完成一大關 → 分數翻倍
+        if (questionCount == maxQuestions) {
             colorDisplay.setScore(colorDisplay.score * 2)
-            statusText.text = "恭喜完成一大關！分數翻倍：${colorDisplay.score}"
-
-            // 儲存分數
+            statusText.text = "完成一大關！分數翻倍：${colorDisplay.score}"
             saveScore(colorDisplay.score)
-
-            // 回到主選單
-            handler.postDelayed({
-                finish()
-            }, 2000L)
-
+            handler.postDelayed({ finish() }, 2000L)
         } else {
             level++
             setGameBlocksEnabled(false)
@@ -170,16 +175,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onWrong() {
-        statusText.text = "答錯了！最終分數：${colorDisplay.score}\n再玩一次，按下開始遊戲！"
+        lives--
+        livesText.text = "生命值：$lives"
+        statusText.text = "答錯了！扣除 1 點生命值（剩餘：$lives）"
         setGameBlocksEnabled(false)
-        btnStart.visibility = View.VISIBLE
-        colorDisplay.showColor(Color.LTGRAY)
 
-        // 儲存分數
-        saveScore(colorDisplay.score)
+        if (lives <= 0) {
+            handler.postDelayed({
+                statusText.text = "遊戲結束！最終分數：${colorDisplay.score}"
+                saveScore(colorDisplay.score)
+                colorDisplay.showColor(Color.LTGRAY)
+                btnStart.visibility = View.VISIBLE
+                livesText.visibility = View.GONE
+                setGameBlocksEnabled(false)
+            }, 1000L)
+        } else {
+            handler.postDelayed({
+                statusText.text = "第 $level 關，請再試一次！"
+                replayCurrentQuestion()
+            }, 1000L)
+        }
     }
 
-    // 分數儲存系統 (SharedPreferences)
     private fun saveScore(score: Int) {
         val prefs = getSharedPreferences("game_scores", Context.MODE_PRIVATE)
         val editor = prefs.edit()
@@ -189,11 +206,8 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 
-    // 色塊閃爍效果
     private fun flashBlock(block: View) {
         block.alpha = 0.5f
-        handler.postDelayed({
-            block.alpha = 1f
-        }, 200L)
+        handler.postDelayed({ block.alpha = 1f }, 200L)
     }
 }

@@ -24,6 +24,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"/>
 
+    <!-- 生命值顯示（置中，放在提示文字下方） -->
+    <TextView
+        android:id="@+id/livesText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="生命值：3"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"/>
+
     <!-- 開始遊戲按鈕 -->
     <Button
         android:id="@+id/btnStart"
@@ -44,7 +56,6 @@
         android:layout_marginTop="20dp"
         android:padding="8dp">
 
-        <!-- 四個色塊 -->
         <View
             android:id="@+id/blockRed"
             android:layout_width="0dp"
