@@ -45,6 +45,26 @@
         android:layout_gravity="center"
         android:layout_marginTop="12dp"/>
 
+    <!-- 再玩一次按鈕 -->
+    <Button
+        android:id="@+id/btnRetry"
+        android:text="再玩一次"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"/>
+
+    <!-- 回到主選單按鈕 -->
+    <Button
+        android:id="@+id/btnBackMenu"
+        android:text="回到主選單"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"/>
+
     <!-- 四個顏色塊 -->
     <GridLayout
         android:id="@+id/colorGrid"

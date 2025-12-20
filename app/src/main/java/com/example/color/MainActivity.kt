@@ -1,6 +1,7 @@
 package com.example.color
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +11,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlin.random.Random
+import android.util.Log
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var colorTextView: TextView
     private lateinit var btnStart: Button
     private lateinit var livesText: TextView
+    private lateinit var btnRetry: Button
+    private lateinit var btnBackMenu: Button
 
     private lateinit var blockRed: View
     private lateinit var blockYellow: View
@@ -51,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         statusText = findViewById(R.id.statusText)
         btnStart = findViewById(R.id.btnStart)
         livesText = findViewById(R.id.livesText)
+        btnRetry = findViewById(R.id.btnRetry)
+        btnBackMenu = findViewById(R.id.btnBackMenu)
 
         blockRed = findViewById(R.id.blockRed)
         blockYellow = findViewById(R.id.blockYellow)
@@ -68,10 +74,14 @@ class MainActivity : AppCompatActivity() {
         blockGreen.setOnClickListener { if (!isPlayingSequence) { flashBlock(blockGreen); inputHandler.checkInput(Color.GREEN) } }
 
         btnStart.setOnClickListener { startGame() }
+        btnRetry.setOnClickListener { startGame() }
+        btnBackMenu.setOnClickListener { finish() }
 
         setGameBlocksEnabled(false)
         btnStart.visibility = View.VISIBLE
         livesText.visibility = View.GONE
+        btnRetry.visibility = View.GONE
+        btnBackMenu.visibility = View.GONE
     }
 
     private fun applyDifficultyDefaults() {
@@ -99,6 +109,8 @@ class MainActivity : AppCompatActivity() {
         statusText.text = "遊戲開始！（難度：$difficulty）"
 
         btnStart.visibility = View.GONE
+        btnRetry.visibility = View.GONE
+        btnBackMenu.visibility = View.GONE
         livesText.visibility = View.VISIBLE
         livesText.text = "生命值：$lives"
 
@@ -146,6 +158,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onCorrect() {
         questionCount++
+        Log.d("GameDebug", "questionCount=$questionCount, maxQuestions=$maxQuestions")
 
         val points = when (difficulty) {
             "easy" -> 5
@@ -166,7 +179,14 @@ class MainActivity : AppCompatActivity() {
             colorDisplay.setScore(colorDisplay.score * 2)
             statusText.text = "完成一大關！分數翻倍：${colorDisplay.score}"
             saveScore(colorDisplay.score)
-            handler.postDelayed({ finish() }, 2000L)
+
+            // 顯示結束選項
+            handler.postDelayed({
+                btnRetry.visibility = View.VISIBLE
+                btnBackMenu.visibility = View.VISIBLE
+                livesText.visibility = View.GONE
+                setGameBlocksEnabled(false)
+            }, 1000L)
         } else {
             level++
             setGameBlocksEnabled(false)
@@ -185,7 +205,9 @@ class MainActivity : AppCompatActivity() {
                 statusText.text = "遊戲結束！最終分數：${colorDisplay.score}"
                 saveScore(colorDisplay.score)
                 colorDisplay.showColor(Color.LTGRAY)
-                btnStart.visibility = View.VISIBLE
+
+                btnRetry.visibility = View.VISIBLE
+                btnBackMenu.visibility = View.VISIBLE
                 livesText.visibility = View.GONE
                 setGameBlocksEnabled(false)
             }, 1000L)

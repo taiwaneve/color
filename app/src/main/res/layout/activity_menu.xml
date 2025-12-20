@@ -22,7 +22,7 @@
         android:textSize="20sp"
         android:layout_margin="16dp"/>
 
-        <!-- 新增「我的小家」按鈕 -->
+    <!-- 新增「我的小家」按鈕 -->
     <Button
         android:id="@+id/btnMyHome"
         android:layout_width="200dp"
@@ -31,4 +31,14 @@
         android:textSize="20sp"
         android:layout_margin="16dp"/>
 
+    <!-- 顯示目前得分 -->
+    <TextView
+        android:id="@+id/totalScoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="目前得分：0"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp"
+        android:gravity="center"/>
 </LinearLayout>

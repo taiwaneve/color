@@ -3,6 +3,7 @@ package com.example.color
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
@@ -11,6 +12,7 @@ class MenuActivity : AppCompatActivity() {
     private lateinit var btnStartGame: Button
     private lateinit var btnShop: Button
     private lateinit var btnMyHome: Button
+    private lateinit var totalScoreText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +21,7 @@ class MenuActivity : AppCompatActivity() {
         btnStartGame = findViewById(R.id.btnStartGame)
         btnShop = findViewById(R.id.btnShop)
         btnMyHome = findViewById(R.id.btnMyHome)
+        totalScoreText = findViewById(R.id.totalScoreText)
 
         // 開始遊戲 → 選擇難度
         btnStartGame.setOnClickListener {
@@ -47,5 +50,14 @@ class MenuActivity : AppCompatActivity() {
         btnMyHome.setOnClickListener {
             // 之後可以新增顯示分數紀錄或玩家資訊
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 讀取 SharedPreferences 中的分數紀錄
+        val prefs = getSharedPreferences("game_scores", MODE_PRIVATE)
+        val history = prefs.getString("scores", "") ?: ""
+        val total = history.split(",").filter { it.isNotEmpty() }.sumOf { it.toInt() }
+        totalScoreText.text = "目前得分：$total"
     }
 }
