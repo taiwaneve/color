@@ -43,10 +43,11 @@ class MainActivity : AppCompatActivity() {
     private var maxQuestions = 10
     private var lives = 1
     private var difficulty = "hard"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
 
         // 隱藏狀態欄（相容舊版與新版 Android）
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

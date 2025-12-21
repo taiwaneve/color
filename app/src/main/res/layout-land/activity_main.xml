@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#333333">
+
+    <!-- 左側：顏色顯示區 + 狀態文字 + 按鈕 -->
+    <LinearLayout
+        android:id="@+id/leftPanel"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/colorGrid"
+        android:layout_margin="12dp">
+
+        <!-- 顏色顯示區 -->
+        <TextView
+            android:id="@+id/colorTextView"
+            android:text="顏色顯示區"
+            android:textSize="32sp"
+            android:gravity="center"
+            android:background="#D3D3D3"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"/>
+
+        <!-- 狀態文字 -->
+        <TextView
+            android:id="@+id/statusText"
+            android:text="歡迎來到顏色記憶遊戲！"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"/>
+
+        <!-- 生命值 -->
+        <TextView
+            android:id="@+id/livesText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="生命值：3"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"/>
+
+        <!-- 按鈕區 -->
+        <Button
+            android:id="@+id/btnStart"
+            android:text="開始遊戲"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"/>
+
+        <Button
+            android:id="@+id/btnRetry"
+            android:text="再玩一次"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnBackMenu"
+            android:text="回到主選單"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- 右側：顏色方塊區 -->
+    <GridLayout
+        android:id="@+id/colorGrid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:columnCount="2"
+        android:rowCount="2"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/leftPanel">
+
+        <View
+            android:id="@+id/blockRed"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:background="#FF0000"
+            android:layout_margin="6dp"/>
+
+        <View
+            android:id="@+id/blockYellow"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:background="#FFFF00"
+            android:layout_margin="6dp"/>
+
+        <View
+            android:id="@+id/blockBlue"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:background="#0000FF"
+            android:layout_margin="6dp"/>
+
+        <View
+            android:id="@+id/blockGreen"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:background="#00FF00"
+            android:layout_margin="6dp"/>
+    </GridLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

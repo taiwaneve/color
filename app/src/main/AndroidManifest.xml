@@ -12,7 +12,9 @@
         <!-- 主選單 Activity (唯一 LAUNCHER) -->
         <activity
             android:name=".MenuActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -20,16 +22,28 @@
         </activity>
 
         <!-- 遊戲 Activity -->
-        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"/>
 
         <!-- 商城 Activity -->
-        <activity android:name=".ShopActivity" />
+        <activity
+            android:name=".ShopActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"/>
 
         <!-- 我的小家 Activity -->
-        <activity android:name=".MyHomeActivity" />
+        <activity
+            android:name=".MyHomeActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"/>
 
         <!-- 房間 Activity -->
-        <activity android:name=".EmptyRoomActivity" />
+        <activity
+            android:name=".EmptyRoomActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"/>
 
     </application>
 
