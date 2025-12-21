@@ -1,12 +1,24 @@
 <resources>
-    <!-- App 主題 (可能已存在) -->
+    <!-- App 主題 (可能已經存在) -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- 你的主題設定 -->
     </style>
 
-    <!-- Toolbar 專用樣式 -->
+    <!-- Toolbar 專用主題 -->
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:textColorPrimary">#FFFFFF</item> <!-- 標題字體白色 -->
-        <item name="android:textColorSecondary">#FFFFFF</item>
+        <!-- Toolbar 標題字體顏色 -->
+        <item name="android:textColorPrimary">"#000000"</item>
+        <item name="android:textColorSecondary">"#000000"</item>
+
+        <!-- Menu item 文字顏色 -->
+        <item name="android:actionMenuTextColor">#FFFFFF</item>
+
+        <!-- Overflow Menu（三個垂直點）顏色 -->
+        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle</item>
+    </style>
+
+    <!-- Overflow Menu 按鈕樣式 -->
+    <style name="OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">#FFFFFF</item> <!-- 三個點改成白色 -->
     </style>
 </resources>

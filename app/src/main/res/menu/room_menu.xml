@@ -5,5 +5,5 @@
         android:icon="@drawable/ic_save"
         android:title="儲存"
         android:showAsAction="always"
-        android:iconTint="#000000"/> <!-- 圖示改黑色 -->
+        android:iconTint="#000000"/> <!-- 強制顯示黑色 -->
 </menu>

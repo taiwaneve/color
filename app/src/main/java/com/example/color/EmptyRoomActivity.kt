@@ -77,6 +77,8 @@ class EmptyRoomActivity : AppCompatActivity() {
     // 載入 Toolbar 選單 (右邊儲存按鍵)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.room_menu, menu)
+        val saveItem = menu?.findItem(R.id.action_save)
+        saveItem?.icon?.setTint(android.graphics.Color.BLACK) // 強制黑色
         return true
     }
 
