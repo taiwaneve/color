@@ -169,9 +169,12 @@ class EmptyRoomActivity : AppCompatActivity() {
 
     private fun loadFurnitureLayout(filteredList: List<Furniture>) {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
+
+        // 先清空房間，避免殘留未儲存的家具
+        roomLayout.removeAllViews()
+
         val set = prefs.getStringSet("furniture_instances", emptySet()) ?: emptySet()
 
-        // 只有有紀錄才生成家具
         for (data in set) {
             val parts = data.split(",")
             if (parts.size == 5) {
