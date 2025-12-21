@@ -21,7 +21,7 @@ class MyHomeActivity : AppCompatActivity() {
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home) // 你的小房子圖示
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home) // 小房子圖示 (24dp)
 
         // 初始化已購買物品顯示區域
         ownedItemsLayout = findViewById(R.id.ownedItemsLayout)

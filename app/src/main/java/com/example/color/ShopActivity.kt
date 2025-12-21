@@ -8,7 +8,6 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 
 class ShopActivity : AppCompatActivity() {
 
@@ -38,7 +37,7 @@ class ShopActivity : AppCompatActivity() {
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home) // 小房子圖示
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home) // 小房子圖示 (24dp)
 
         // 初始化 UI
         totalPointsText = findViewById(R.id.totalPointsText)
