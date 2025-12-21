@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.view.GestureDetector
 
 class EmptyRoomActivity : AppCompatActivity() {
 
@@ -25,16 +26,8 @@ class EmptyRoomActivity : AppCompatActivity() {
 
     // 全部家具清單
     private val furnitureList = listOf(
-        Furniture(1, "小沙發", R.drawable.sofa),
-        /*Furniture(2, "玩具熊", R.drawable.teddy_bear),
-        Furniture(3, "書桌", R.drawable.desk),
-        Furniture(4, "盆栽", R.drawable.plant),
-        Furniture(5, "電視", R.drawable.tv),
-        Furniture(6, "燈具", R.drawable.lamp),
-        Furniture(7, "畫作", R.drawable.painting),
-        Furniture(8, "床", R.drawable.bed),
-        Furniture(9, "小汽車玩具", R.drawable.toy_car),
-        Furniture(10, "地毯", R.drawable.carpet) // 特殊家具：地毯*/
+        Furniture(1, "小沙發", R.drawable.sofa)
+        // 其他家具可依需求加上
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,44 +114,63 @@ class EmptyRoomActivity : AppCompatActivity() {
         }
     }
 
-    // 新增家具到房間
+    // 新增家具到房間（支援雙擊刪除 + 保留拖曳/縮放/旋轉）
     private fun addFurnitureToRoom(furniture: Furniture, posX: Float, posY: Float) {
+        val uniqueTag = "${java.util.UUID.randomUUID()}_${furniture.id}"
+
         val furnitureView = FurnitureView(this).apply {
             setImageResource(furniture.drawableRes)
-            tag = furniture.id.toString()
+            tag = uniqueTag
             layoutParams = FrameLayout.LayoutParams(200, 200)
             x = posX
             y = posY
         }
+
+        val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDoubleTap(e: android.view.MotionEvent): Boolean {
+                roomLayout.removeView(furnitureView)
+                Toast.makeText(this@EmptyRoomActivity, "${furniture.name} 已刪除", Toast.LENGTH_SHORT).show()
+
+                val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
+                val set = prefs.getStringSet("furniture_instances", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+                val updatedSet = set.filterNot { it.startsWith("$uniqueTag,") }.toMutableSet()
+                prefs.edit().putStringSet("furniture_instances", updatedSet).apply()
+
+                return true
+            }
+        })
+
+        furnitureView.setOnTouchListener { v, event ->
+            gestureDetector.onTouchEvent(event)   // 雙擊刪除
+            v.onTouchEvent(event)                 // 保留原本拖曳/縮放/旋轉
+            true
+        }
+
         roomLayout.addView(furnitureView)
-    }
-    // 儲存家具位置 + 縮放 + 旋轉
-    private fun saveFurniturePosition(id: Int, x: Float, y: Float, scale: Float, rotation: Float) {
+
+        // 新增時立即存入紀錄
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-
-        // 每次新增一個家具就存成一個字串
-        val furnitureData = "$id,$x,$y,$scale,$rotation"
-
-        // 取出已存的集合，加入新的
         val set = prefs.getStringSet("furniture_instances", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-        set.add(furnitureData)
-
-        editor.putStringSet("furniture_instances", set)
-        editor.apply()
+        val data = "$uniqueTag,${furniture.id},${furnitureView.x},${furnitureView.y},${furnitureView.scaleX},${furnitureView.rotation}"
+        set.add(data)
+        prefs.edit().putStringSet("furniture_instances", set).apply()
     }
 
+
+
+    // 儲存整個房間佈局
     private fun saveFurnitureLayout() {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
         val editor = prefs.edit()
         val set = mutableSetOf<String>()
 
-        // 遍歷房間裡所有家具
         for (i in 0 until roomLayout.childCount) {
             val view = roomLayout.getChildAt(i)
             if (view is FurnitureView && view.tag != null) {
-                val id = view.tag.toString().toInt()
-                val data = "$id,${view.x},${view.y},${view.scaleX},${view.rotation}"
+                val tagParts = view.tag.toString().split("_")
+                val uniqueTag = tagParts[0]
+                val id = tagParts[1].toInt()
+                val data = "$uniqueTag,$id,${view.x},${view.y},${view.scaleX},${view.rotation}"
                 set.add(data)
             }
         }
@@ -167,28 +179,28 @@ class EmptyRoomActivity : AppCompatActivity() {
         editor.apply()
     }
 
+    // 載入家具佈局
     private fun loadFurnitureLayout(filteredList: List<Furniture>) {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
-
-        // 先清空房間，避免殘留未儲存的家具
         roomLayout.removeAllViews()
 
         val set = prefs.getStringSet("furniture_instances", emptySet()) ?: emptySet()
 
         for (data in set) {
             val parts = data.split(",")
-            if (parts.size == 5) {
-                val id = parts[0].toInt()
-                val x = parts[1].toFloat()
-                val y = parts[2].toFloat()
-                val scale = parts[3].toFloat()
-                val rotation = parts[4].toFloat()
+            if (parts.size == 6) {
+                val uniqueTag = parts[0]
+                val id = parts[1].toInt()
+                val x = parts[2].toFloat()
+                val y = parts[3].toFloat()
+                val scale = parts[4].toFloat()
+                val rotation = parts[5].toFloat()
 
                 val furniture = filteredList.find { it.id == id }
                 if (furniture != null) {
                     val furnitureView = FurnitureView(this).apply {
                         setImageResource(furniture.drawableRes)
-                        tag = furniture.id.toString()
+                        tag = "${uniqueTag}_${id}"
                         layoutParams = FrameLayout.LayoutParams(200, 200)
                         this.x = x
                         this.y = y
@@ -196,6 +208,26 @@ class EmptyRoomActivity : AppCompatActivity() {
                         this.scaleY = scale
                         this.rotation = rotation
                     }
+
+                    val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+                        override fun onDoubleTap(e: android.view.MotionEvent): Boolean {
+                            roomLayout.removeView(furnitureView)
+                            Toast.makeText(this@EmptyRoomActivity, "${furniture.name} 已刪除", Toast.LENGTH_SHORT).show()
+
+                            val set = prefs.getStringSet("furniture_instances", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+                            val updatedSet = set.filterNot { it.startsWith("$uniqueTag,") }.toMutableSet()
+                            prefs.edit().putStringSet("furniture_instances", updatedSet).apply()
+
+                            return true
+                        }
+                    })
+
+                    furnitureView.setOnTouchListener { v, event ->
+                        gestureDetector.onTouchEvent(event)   // 雙擊刪除
+                        v.onTouchEvent(event)                 // 保留原本拖曳/縮放/旋轉
+                        true
+                    }
+
                     roomLayout.addView(furnitureView)
                 }
             }
