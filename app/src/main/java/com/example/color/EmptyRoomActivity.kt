@@ -4,14 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -85,14 +82,12 @@ class EmptyRoomActivity : AppCompatActivity() {
         val owned = prefs.getStringSet("owned_items", emptySet()) ?: emptySet()
 
         if (owned.isEmpty()) {
-            // 倉庫沒有東西 → 顯示提示文字
             furnitureRecyclerView.visibility = View.GONE
             emptyMessage.visibility = View.VISIBLE
             emptyMessage.text = "你還沒有家具，去商城逛逛吧"
             emptyMessage.textSize = 24f
             emptyMessage.setTextColor(android.graphics.Color.BLACK)
         } else {
-            // 過濾家具清單，只顯示倉庫裡有的物品
             val filteredList = furnitureList.filter { owned.contains(it.name) }
 
             furnitureRecyclerView.layoutManager =
@@ -128,106 +123,78 @@ class EmptyRoomActivity : AppCompatActivity() {
 
     // 新增家具到房間
     private fun addFurnitureToRoom(furniture: Furniture, posX: Float, posY: Float) {
-        val furnitureView = ImageView(this).apply {
+        val furnitureView = FurnitureView(this).apply {
             setImageResource(furniture.drawableRes)
             tag = furniture.id.toString()
-
-            if (furniture.name == "地毯") {
-                layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    300,
-                    Gravity.BOTTOM
-                )
-            } else {
-                layoutParams = FrameLayout.LayoutParams(200, 200)
-                x = posX
-                y = posY
-            }
+            layoutParams = FrameLayout.LayoutParams(200, 200)
+            x = posX
+            y = posY
         }
-
-        if (furniture.name != "地毯") {
-            furnitureView.setOnTouchListener { v, event ->
-                when (event.action) {
-                    MotionEvent.ACTION_MOVE -> {
-                        val parentWidth = roomLayout.width
-                        val parentHeight = roomLayout.height
-
-                        var newX = event.rawX - v.width / 2
-                        var newY = event.rawY - v.height / 2
-
-                        // 邊界檢查
-                        if (newX < 0f) newX = 0f
-                        if (newY < 0f) newY = 0f
-                        if (newX + v.width > parentWidth) newX = (parentWidth - v.width).toFloat()
-                        if (newY + v.height > parentHeight) newY = (parentHeight - v.height).toFloat()
-
-                        v.x = newX
-                        v.y = newY
-                    }
-                    MotionEvent.ACTION_UP -> {
-                        saveFurniturePosition(furniture.id, v.x, v.y)
-                    }
-                }
-                true
-            }
-
-            furnitureView.setOnLongClickListener {
-                roomLayout.removeView(furnitureView)
-                removeFurniturePosition(furniture.id)
-                Toast.makeText(this, "${furniture.name} 已刪除", Toast.LENGTH_SHORT).show()
-                true
-            }
-        }
-
-        when (furniture.name) {
-            "地毯" -> roomLayout.addView(furnitureView, 0)
-            "畫作" -> roomLayout.addView(furnitureView)
-            else -> roomLayout.addView(furnitureView, roomLayout.childCount - 1)
-        }
+        roomLayout.addView(furnitureView)
     }
-
-    // 修改範圍：整個 saveFurniturePosition 方法
+    // 儲存家具位置 + 縮放 + 旋轉
     private fun saveFurniturePosition(id: Int, x: Float, y: Float, scale: Float, rotation: Float) {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
-        prefs.edit().apply {
-            putFloat("furniture_${id}_x", x)
-            putFloat("furniture_${id}_y", y)
-            putFloat("furniture_${id}_scale", scale)
-            putFloat("furniture_${id}_rotation", rotation)
-            apply()
-        }
-    }
-    private fun removeFurniturePosition(id: Int) {
-        val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
-        prefs.edit().apply {
-            remove("furniture_${id}_x")
-            remove("furniture_${id}_y")
-            apply()
-        }
+        val editor = prefs.edit()
+
+        // 每次新增一個家具就存成一個字串
+        val furnitureData = "$id,$x,$y,$scale,$rotation"
+
+        // 取出已存的集合，加入新的
+        val set = prefs.getStringSet("furniture_instances", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+        set.add(furnitureData)
+
+        editor.putStringSet("furniture_instances", set)
+        editor.apply()
     }
 
     private fun saveFurnitureLayout() {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
         val editor = prefs.edit()
-        for (furniture in furnitureList) {
-            val view = roomLayout.findViewWithTag<ImageView>(furniture.id.toString())
-            if (view != null) {
-                editor.putFloat("furniture_${furniture.id}_x", view.x)
-                editor.putFloat("furniture_${furniture.id}_y", view.y)
+        val set = mutableSetOf<String>()
+
+        // 遍歷房間裡所有家具
+        for (i in 0 until roomLayout.childCount) {
+            val view = roomLayout.getChildAt(i)
+            if (view is FurnitureView && view.tag != null) {
+                val id = view.tag.toString().toInt()
+                val data = "$id,${view.x},${view.y},${view.scaleX},${view.rotation}"
+                set.add(data)
             }
         }
+
+        editor.putStringSet("furniture_instances", set)
         editor.apply()
     }
 
     private fun loadFurnitureLayout(filteredList: List<Furniture>) {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
-        for (furniture in filteredList) {
-            val x = prefs.getFloat("furniture_${furniture.id}_x", -1f)
-            val y = prefs.getFloat("furniture_${furniture.id}_y", -1f)
-            if (furniture.name == "地毯") {
-                addFurnitureToRoom(furniture, 0f, 0f)
-            } else if (x != -1f && y != -1f) {
-                addFurnitureToRoom(furniture, x, y)
+        val set = prefs.getStringSet("furniture_instances", emptySet()) ?: emptySet()
+
+        // 只有有紀錄才生成家具
+        for (data in set) {
+            val parts = data.split(",")
+            if (parts.size == 5) {
+                val id = parts[0].toInt()
+                val x = parts[1].toFloat()
+                val y = parts[2].toFloat()
+                val scale = parts[3].toFloat()
+                val rotation = parts[4].toFloat()
+
+                val furniture = filteredList.find { it.id == id }
+                if (furniture != null) {
+                    val furnitureView = FurnitureView(this).apply {
+                        setImageResource(furniture.drawableRes)
+                        tag = furniture.id.toString()
+                        layoutParams = FrameLayout.LayoutParams(200, 200)
+                        this.x = x
+                        this.y = y
+                        this.scaleX = scale
+                        this.scaleY = scale
+                        this.rotation = rotation
+                    }
+                    roomLayout.addView(furnitureView)
+                }
             }
         }
     }
