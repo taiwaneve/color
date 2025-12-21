@@ -2,10 +2,12 @@ package com.example.color
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +17,8 @@ class ShopActivity : AppCompatActivity() {
 
     private lateinit var totalPointsText: TextView
     private lateinit var shopList: ListView
+
+    private lateinit var prefs: SharedPreferences
 
     private var totalPoints = 0
 
@@ -34,6 +38,9 @@ class ShopActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
+
+
+
 
         // 隱藏狀態欄（相容舊版與新版 Android）
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

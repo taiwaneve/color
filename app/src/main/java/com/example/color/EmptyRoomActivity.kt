@@ -8,11 +8,14 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +24,9 @@ class EmptyRoomActivity : AppCompatActivity() {
 
     private lateinit var roomLayout: FrameLayout
     private lateinit var furnitureRecyclerView: RecyclerView
+    private lateinit var emptyMessage: TextView
 
+    // 全部家具清單
     private val furnitureList = listOf(
         Furniture(1, "小沙發", R.drawable.sofa),
         /*Furniture(2, "玩具熊", R.drawable.teddy_bear),
@@ -39,7 +44,7 @@ class EmptyRoomActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_empty_room)
 
-        // 隱藏狀態欄（相容舊版與新版 Android）
+        // 隱藏狀態欄
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.insetsController?.hide(android.view.WindowInsets.Type.statusBars())
         } else {
@@ -52,9 +57,21 @@ class EmptyRoomActivity : AppCompatActivity() {
 
         roomLayout = findViewById(R.id.roomLayout)
         furnitureRecyclerView = findViewById(R.id.furnitureRecyclerView)
+        emptyMessage = findViewById(R.id.emptyMessage)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        val toggleButton: AppCompatImageButton = findViewById(R.id.toggleButton)
+        toggleButton.setOnClickListener {
+            if (furnitureRecyclerView.visibility == View.VISIBLE) {
+                furnitureRecyclerView.visibility = View.GONE
+                toggleButton.setImageResource(R.drawable.ic_arrow_up)
+            } else {
+                furnitureRecyclerView.visibility = View.VISIBLE
+                toggleButton.setImageResource(R.drawable.ic_arrow_down)
+            }
+        }
 
         // 左上角小房子 → 回主選單
         toolbar.setNavigationOnClickListener {
@@ -63,26 +80,41 @@ class EmptyRoomActivity : AppCompatActivity() {
             finish()
         }
 
-        // 家具清單 RecyclerView 設定
-        furnitureRecyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        furnitureRecyclerView.adapter = FurnitureAdapter(furnitureList) { furniture ->
-            addFurnitureToRoom(furniture, 100f, 100f)
-        }
+        // 讀取倉庫已擁有的物品
+        val prefs = getSharedPreferences("game_scores", Context.MODE_PRIVATE)
+        val owned = prefs.getStringSet("owned_items", emptySet()) ?: emptySet()
 
-        // 載入已儲存的家具佈局
-        loadFurnitureLayout()
+        if (owned.isEmpty()) {
+            // 倉庫沒有東西 → 顯示提示文字
+            furnitureRecyclerView.visibility = View.GONE
+            emptyMessage.visibility = View.VISIBLE
+            emptyMessage.text = "你還沒有家具，去商城逛逛吧"
+            emptyMessage.textSize = 24f
+            emptyMessage.setTextColor(android.graphics.Color.BLACK)
+        } else {
+            // 過濾家具清單，只顯示倉庫裡有的物品
+            val filteredList = furnitureList.filter { owned.contains(it.name) }
+
+            furnitureRecyclerView.layoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            furnitureRecyclerView.adapter = FurnitureAdapter(filteredList) { furniture ->
+                addFurnitureToRoom(furniture, 100f, 100f)
+            }
+
+            emptyMessage.visibility = View.GONE
+
+            // 載入已儲存的家具佈局
+            loadFurnitureLayout(filteredList)
+        }
     }
 
-    // 載入 Toolbar 選單 (右邊儲存按鍵)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.room_menu, menu)
         val saveItem = menu?.findItem(R.id.action_save)
-        saveItem?.icon?.setTint(android.graphics.Color.BLACK) // 強制黑色
+        saveItem?.icon?.setTint(android.graphics.Color.BLACK)
         return true
     }
 
-    // 處理 Toolbar 選單事件
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_save -> {
@@ -98,12 +130,12 @@ class EmptyRoomActivity : AppCompatActivity() {
     private fun addFurnitureToRoom(furniture: Furniture, posX: Float, posY: Float) {
         val furnitureView = ImageView(this).apply {
             setImageResource(furniture.drawableRes)
+            tag = furniture.id.toString()
 
-            // 地毯特殊邏輯：鋪在底部，不能拖曳或刪除
             if (furniture.name == "地毯") {
                 layoutParams = FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
-                    300, // 地毯高度，可調整
+                    300,
                     Gravity.BOTTOM
                 )
             } else {
@@ -114,12 +146,23 @@ class EmptyRoomActivity : AppCompatActivity() {
         }
 
         if (furniture.name != "地毯") {
-            // 支援拖曳移動
             furnitureView.setOnTouchListener { v, event ->
                 when (event.action) {
                     MotionEvent.ACTION_MOVE -> {
-                        v.x = event.rawX - v.width / 2
-                        v.y = event.rawY - v.height / 2
+                        val parentWidth = roomLayout.width
+                        val parentHeight = roomLayout.height
+
+                        var newX = event.rawX - v.width / 2
+                        var newY = event.rawY - v.height / 2
+
+                        // 邊界檢查
+                        if (newX < 0f) newX = 0f
+                        if (newY < 0f) newY = 0f
+                        if (newX + v.width > parentWidth) newX = (parentWidth - v.width).toFloat()
+                        if (newY + v.height > parentHeight) newY = (parentHeight - v.height).toFloat()
+
+                        v.x = newX
+                        v.y = newY
                     }
                     MotionEvent.ACTION_UP -> {
                         saveFurniturePosition(furniture.id, v.x, v.y)
@@ -128,23 +171,21 @@ class EmptyRoomActivity : AppCompatActivity() {
                 true
             }
 
-            // 長按刪除家具
             furnitureView.setOnLongClickListener {
                 roomLayout.removeView(furnitureView)
                 removeFurniturePosition(furniture.id)
+                Toast.makeText(this, "${furniture.name} 已刪除", Toast.LENGTH_SHORT).show()
                 true
             }
         }
 
-        // 層級控制：地毯最底層，畫作最上層，其他家具在中間
         when (furniture.name) {
-            "地毯" -> roomLayout.addView(furnitureView, 0) // 最底層
-            "畫作" -> roomLayout.addView(furnitureView) // 最上層
-            else -> roomLayout.addView(furnitureView, roomLayout.childCount - 1) // 中間
+            "地毯" -> roomLayout.addView(furnitureView, 0)
+            "畫作" -> roomLayout.addView(furnitureView)
+            else -> roomLayout.addView(furnitureView, roomLayout.childCount - 1)
         }
     }
 
-    // 儲存單一家具位置
     private fun saveFurniturePosition(id: Int, x: Float, y: Float) {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
         prefs.edit().apply {
@@ -154,7 +195,6 @@ class EmptyRoomActivity : AppCompatActivity() {
         }
     }
 
-    // 移除家具位置
     private fun removeFurniturePosition(id: Int) {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
         prefs.edit().apply {
@@ -164,7 +204,6 @@ class EmptyRoomActivity : AppCompatActivity() {
         }
     }
 
-    // 儲存整個房間佈局
     private fun saveFurnitureLayout() {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
         val editor = prefs.edit()
@@ -178,14 +217,13 @@ class EmptyRoomActivity : AppCompatActivity() {
         editor.apply()
     }
 
-    // 讀取家具佈局
-    private fun loadFurnitureLayout() {
+    private fun loadFurnitureLayout(filteredList: List<Furniture>) {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
-        for (furniture in furnitureList) {
+        for (furniture in filteredList) {
             val x = prefs.getFloat("furniture_${furniture.id}_x", -1f)
             val y = prefs.getFloat("furniture_${furniture.id}_y", -1f)
             if (furniture.name == "地毯") {
-                addFurnitureToRoom(furniture, 0f, 0f) // 地毯固定鋪底
+                addFurnitureToRoom(furniture, 0f, 0f)
             } else if (x != -1f && y != -1f) {
                 addFurnitureToRoom(furniture, x, y)
             }
