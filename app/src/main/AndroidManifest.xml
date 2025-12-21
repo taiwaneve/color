@@ -25,6 +25,9 @@
         <!-- 商城 Activity -->
         <activity android:name=".ShopActivity" />
 
+        <!-- 我的小家 Activity -->
+        <activity android:name=".MyHomeActivity" />
+
     </application>
 
 </manifest>

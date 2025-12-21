@@ -46,9 +46,10 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // 我的⼩家（目前先沒有功能）
+        //我的小家
         btnMyHome.setOnClickListener {
-            // 之後可以新增顯示分數紀錄或玩家資訊
+            val intent = Intent(this, MyHomeActivity::class.java)
+            startActivity(intent)
         }
     }
 

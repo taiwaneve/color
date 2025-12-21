@@ -3,6 +3,7 @@ package com.example.color
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,6 +13,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlin.random.Random
 import android.util.Log
+import androidx.annotation.RequiresApi
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,9 +44,19 @@ class MainActivity : AppCompatActivity() {
     private var lives = 1
     private var difficulty = "hard"
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // 隱藏狀態欄
+        window.insetsController?.hide(android.view.WindowInsets.Type.statusBars())
+
+    actionBar?.hide()   // 如果有 ActionBar 也隱藏
+        supportActionBar?.hide()
+
+        setContentView(R.layout.activity_main)
+
 
         // 接收難度參數（若未提供，預設困難）
         difficulty = intent.getStringExtra("difficulty") ?: "hard"
