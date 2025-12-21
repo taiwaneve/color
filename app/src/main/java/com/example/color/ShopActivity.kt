@@ -17,16 +17,16 @@ class ShopActivity : AppCompatActivity() {
     private var totalPoints = 0
 
     private val items = listOf(
-        ShopItem("小沙發", 100, "家具"),
-        ShopItem("玩具熊", 80, "玩具"),
-        ShopItem("書桌", 120, "家具"),
-        ShopItem("盆栽", 60, "家具"),
-        ShopItem("電視", 150, "家具"),
-        ShopItem("地毯", 90, "家具"),
-        ShopItem("燈具", 70, "家具"),
-        ShopItem("畫作", 110, "家具"),
-        ShopItem("床", 200, "家具"),
-        ShopItem("小汽車玩具", 50, "玩具")
+        ShopItem("小沙發", 100, "家具", R.drawable.ic_sofa),
+        ShopItem("玩具熊", 80, "玩具", R.drawable.ic_teddy),
+        ShopItem("書桌", 120, "家具", R.drawable.ic_desk),
+        ShopItem("盆栽", 60, "家具", R.drawable.ic_plant),
+        ShopItem("電視", 150, "家具", R.drawable.ic_tv),
+        ShopItem("地毯", 90, "家具", R.drawable.ic_carpet),
+        ShopItem("燈具", 70, "家具", R.drawable.ic_lamp),
+        ShopItem("畫作", 110, "家具", R.drawable.ic_painting),
+        ShopItem("床", 200, "家具", R.drawable.ic_bed),
+        ShopItem("小汽車玩具", 50, "玩具", R.drawable.ic_car)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
