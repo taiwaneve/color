@@ -4,17 +4,16 @@
     android:layout_height="match_parent"
     android:background="#222222">
 
-    <!-- 左上角房子圖示 -->
-    <ImageButton
-        android:id="@+id/btnHome"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/ic_home"
-        android:background="@android:color/transparent"
-        android:contentDescription="返回主選單"
-        android:padding="8dp"
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#222222"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- 顯示分數 -->
     <TextView
@@ -24,7 +23,7 @@
         android:text="目前擁有點數：0"
         android:textSize="20sp"
         android:textColor="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/btnHome"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="12dp"/>
 
