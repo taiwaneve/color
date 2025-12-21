@@ -1,44 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="#000000">
+    android:background="@drawable/menu_bg">
 
-    <Button
-        android:id="@+id/btnStartGame"
+    <!-- 分數顯示卡片 (右上角，放大) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/scoreCard"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="開始遊戲"
-        android:textSize="20sp"
-        android:layout_margin="16dp"/>
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp">
 
-    <Button
-        android:id="@+id/btnShop"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="商城"
-        android:textSize="20sp"
-        android:layout_margin="16dp"/>
+        <TextView
+            android:id="@+id/totalScoreText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="目前得分：0"
+            android:textSize="24sp"
+            android:textColor="#FF000000"
+            android:padding="16dp"
+            android:gravity="center"/>
+    </androidx.cardview.widget.CardView>
 
-    <!-- 新增「我的小家」按鈕 -->
-    <Button
-        android:id="@+id/btnMyHome"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="我的小家"
-        android:textSize="20sp"
-        android:layout_margin="16dp"/>
-
-    <!-- 顯示目前得分 -->
-    <TextView
-        android:id="@+id/totalScoreText"
+    <!-- 按鈕群組置中 (不再用 CardView 包住) -->
+    <LinearLayout
+        android:id="@+id/buttonGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="目前得分：0"
-        android:textSize="18sp"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="16dp"
-        android:gravity="center"/>
-</LinearLayout>
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnStartGame"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="開始遊戲"
+            android:textSize="20sp"
+            android:layout_margin="12dp"/>
+
+        <Button
+            android:id="@+id/btnShop"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="商城"
+            android:textSize="20sp"
+            android:layout_margin="12dp"/>
+
+        <Button
+            android:id="@+id/btnMyHome"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="我的小家"
+            android:textSize="20sp"
+            android:layout_margin="12dp"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
