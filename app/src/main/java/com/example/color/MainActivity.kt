@@ -1,13 +1,13 @@
 package com.example.color
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -44,19 +44,23 @@ class MainActivity : AppCompatActivity() {
     private var lives = 1
     private var difficulty = "hard"
 
-    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 隱藏狀態欄
-        window.insetsController?.hide(android.view.WindowInsets.Type.statusBars())
+        // 隱藏狀態欄（相容舊版與新版 Android）
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(android.view.WindowInsets.Type.statusBars())
+        } else {
+            @Suppress("DEPRECATION")
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
 
-    actionBar?.hide()   // 如果有 ActionBar 也隱藏
+        // 隱藏 ActionBar
         supportActionBar?.hide()
-
-        setContentView(R.layout.activity_main)
-
 
         // 接收難度參數（若未提供，預設困難）
         difficulty = intent.getStringExtra("difficulty") ?: "hard"
@@ -192,7 +196,6 @@ class MainActivity : AppCompatActivity() {
             statusText.text = "完成一大關！分數翻倍：${colorDisplay.score}"
             saveScore(colorDisplay.score)
 
-            // 顯示結束選項
             handler.postDelayed({
                 btnRetry.visibility = View.VISIBLE
                 btnBackMenu.visibility = View.VISIBLE
