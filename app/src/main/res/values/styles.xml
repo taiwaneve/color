@@ -1,0 +1,12 @@
+<resources>
+    <!-- App 主題 (可能已存在) -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- 你的主題設定 -->
+    </style>
+
+    <!-- Toolbar 專用樣式 -->
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">#FFFFFF</item> <!-- 標題字體白色 -->
+        <item name="android:textColorSecondary">#FFFFFF</item>
+    </style>
+</resources>

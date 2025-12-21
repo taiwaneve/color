@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 儲存按鍵 -->
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_save"
+        android:title="儲存"
+        android:showAsAction="always"
+        android:iconTint="#000000"/> <!-- 圖示改黑色 -->
+</menu>

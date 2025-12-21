@@ -1,18 +1,21 @@
 package com.example.color
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.color.Furniture
-import com.example.color.FurnitureAdapter
 
 class EmptyRoomActivity : AppCompatActivity() {
 
@@ -29,7 +32,7 @@ class EmptyRoomActivity : AppCompatActivity() {
         Furniture(7, "畫作", R.drawable.painting),
         Furniture(8, "床", R.drawable.bed),
         Furniture(9, "小汽車玩具", R.drawable.toy_car),
-        Furniture(10, "地毯", R.drawable.carpet) // 新增地毯*/
+        Furniture(10, "地毯", R.drawable.carpet) // 特殊家具：地毯*/
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,17 +53,46 @@ class EmptyRoomActivity : AppCompatActivity() {
         roomLayout = findViewById(R.id.roomLayout)
         furnitureRecyclerView = findViewById(R.id.furnitureRecyclerView)
 
-        // 設定 RecyclerView
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // 左上角小房子 → 回主選單
+        toolbar.setNavigationOnClickListener {
+            val intent = Intent(this, MenuActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        // 家具清單 RecyclerView 設定
         furnitureRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         furnitureRecyclerView.adapter = FurnitureAdapter(furnitureList) { furniture ->
             addFurnitureToRoom(furniture, 100f, 100f)
         }
 
-        // 讀取已儲存的家具佈局
+        // 載入已儲存的家具佈局
         loadFurnitureLayout()
     }
 
+    // 載入 Toolbar 選單 (右邊儲存按鍵)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.room_menu, menu)
+        return true
+    }
+
+    // 處理 Toolbar 選單事件
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_save -> {
+                saveFurnitureLayout()
+                Toast.makeText(this, "房間佈局已儲存！", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    // 新增家具到房間
     private fun addFurnitureToRoom(furniture: Furniture, posX: Float, posY: Float) {
         val furnitureView = ImageView(this).apply {
             setImageResource(furniture.drawableRes)
@@ -105,12 +137,12 @@ class EmptyRoomActivity : AppCompatActivity() {
         // 層級控制：地毯最底層，畫作最上層，其他家具在中間
         when (furniture.name) {
             "地毯" -> roomLayout.addView(furnitureView, 0) // 最底層
-            "畫作" -> roomLayout.addView(furnitureView) // 最上層 (預設最後加入)
+            "畫作" -> roomLayout.addView(furnitureView) // 最上層
             else -> roomLayout.addView(furnitureView, roomLayout.childCount - 1) // 中間
         }
     }
 
-    // 儲存家具位置
+    // 儲存單一家具位置
     private fun saveFurniturePosition(id: Int, x: Float, y: Float) {
         val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
         prefs.edit().apply {
@@ -128,6 +160,20 @@ class EmptyRoomActivity : AppCompatActivity() {
             remove("furniture_${id}_y")
             apply()
         }
+    }
+
+    // 儲存整個房間佈局
+    private fun saveFurnitureLayout() {
+        val prefs = getSharedPreferences("room_prefs", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        for (furniture in furnitureList) {
+            val view = roomLayout.findViewWithTag<ImageView>(furniture.id.toString())
+            if (view != null) {
+                editor.putFloat("furniture_${furniture.id}_x", view.x)
+                editor.putFloat("furniture_${furniture.id}_y", view.y)
+            }
+        }
+        editor.apply()
     }
 
     // 讀取家具佈局
