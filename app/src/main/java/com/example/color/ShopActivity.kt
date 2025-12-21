@@ -2,8 +2,10 @@ package com.example.color
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.WindowManager
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -32,6 +34,17 @@ class ShopActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
+
+        // 隱藏狀態欄（相容舊版與新版 Android）
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(android.view.WindowInsets.Type.statusBars())
+        } else {
+            @Suppress("DEPRECATION")
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
 
         // Toolbar 設定
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
