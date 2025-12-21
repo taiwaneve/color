@@ -29,7 +29,7 @@ class EmptyRoomActivity : AppCompatActivity() {
     // 全部家具清單
     private val furnitureList = listOf(
         Furniture(1, "小沙發", R.drawable.sofa),
-        /*Furniture(2, "玩具熊", R.drawable.teddy_bear),
+        Furniture(2, "玩具熊", R.drawable.teddy_bear),
         Furniture(3, "書桌", R.drawable.desk),
         Furniture(4, "盆栽", R.drawable.plant),
         Furniture(5, "電視", R.drawable.tv),
@@ -37,7 +37,7 @@ class EmptyRoomActivity : AppCompatActivity() {
         Furniture(7, "畫作", R.drawable.painting),
         Furniture(8, "床", R.drawable.bed),
         Furniture(9, "小汽車玩具", R.drawable.toy_car),
-        Furniture(10, "地毯", R.drawable.carpet) // 特殊家具：地毯*/
+        Furniture(10, "地毯", R.drawable.carpet) // 特殊家具：地毯
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
