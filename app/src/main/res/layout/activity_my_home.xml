@@ -32,4 +32,15 @@
             android:layout_height="wrap_content"
             android:padding="16dp"/>
     </ScrollView>
+
+    <ImageButton
+        android:id="@+id/btnDoor"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/door_icon"
+        android:background="@android:color/transparent"
+        android:contentDescription="切換場景"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="3dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,7 @@
     <!-- 分數顯示卡片 (右上角，放大) -->
     <androidx.cardview.widget.CardView
         android:id="@+id/scoreCard"
-        android:layout_width="200dp"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
@@ -23,47 +23,47 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="目前得分：0"
-            android:textSize="24sp"
+            android:textSize="28sp"
             android:textColor="#FF000000"
             android:padding="16dp"
             android:gravity="center"/>
     </androidx.cardview.widget.CardView>
 
-    <!-- 按鈕群組置中 (不再用 CardView 包住) -->
-    <LinearLayout
-        android:id="@+id/buttonGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
+    <!-- 三個按鈕同一水平面，大小一致 -->
+    <Button
+        android:id="@+id/btnShop"
+        android:layout_width="220dp"
+        android:layout_height="80dp"
+        android:text="分數商城"
+        android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toStartOf="@id/btnStartGame"
+        android:layout_marginBottom="60dp"
+        android:layout_marginEnd="16dp"/>
 
-        <Button
-            android:id="@+id/btnStartGame"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="開始遊戲"
-            android:textSize="20sp"
-            android:layout_margin="12dp"/>
+    <Button
+        android:id="@+id/btnStartGame"
+        android:layout_width="220dp"
+        android:layout_height="80dp"
+        android:text="開始遊戲"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnShop"
+        app:layout_constraintEnd_toStartOf="@id/btnMyHome"
+        android:layout_marginBottom="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
-        <Button
-            android:id="@+id/btnShop"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="商城"
-            android:textSize="20sp"
-            android:layout_margin="12dp"/>
-
-        <Button
-            android:id="@+id/btnMyHome"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="我的小家"
-            android:textSize="20sp"
-            android:layout_margin="12dp"/>
-    </LinearLayout>
-
+    <Button
+        android:id="@+id/btnMyHome"
+        android:layout_width="220dp"
+        android:layout_height="80dp"
+        android:text="我的小家"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnStartGame"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="60dp"
+        android:layout_marginStart="16dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,11 +6,13 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.WindowManager
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.color.EmptyRoomActivity
 
 class MyHomeActivity : AppCompatActivity() {
 
@@ -57,6 +59,14 @@ class MyHomeActivity : AppCompatActivity() {
         // 讀取已購買商品
         val prefs = getSharedPreferences("game_scores", Context.MODE_PRIVATE)
         val owned = prefs.getStringSet("owned_items", emptySet()) ?: emptySet()
+        ownedItemsLayout.removeAllViews()
+
+        // 點擊門
+        val btnDoor: ImageButton = findViewById(R.id.btnDoor)
+        btnDoor.setOnClickListener {
+            val intent = Intent(this, EmptyRoomActivity::class.java)
+            startActivity(intent)
+        }
 
         if (owned.isEmpty()) {
             val textView = TextView(this@MyHomeActivity).apply {

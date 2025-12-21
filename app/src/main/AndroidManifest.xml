@@ -28,6 +28,9 @@
         <!-- 我的小家 Activity -->
         <activity android:name=".MyHomeActivity" />
 
+        <!-- 房間 Activity -->
+        <activity android:name=".EmptyRoomActivity" />
+
     </application>
 
 </manifest>

@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+
+    <!-- 門的外框 (圓角長方形) -->
+    <path
+        android:fillColor="#8B4513"   
+        android:strokeColor="#000000"
+        android:strokeWidth="3"
+        android:pathData="M12,8 h40 a4,4 0 0 1 4,4 v40 a4,4 0 0 1 -4,4 h-40 a4,4 0 0 1 -4,-4 v-40 a4,4 0 0 1 4,-4 z"/>
+
+    <!-- 門把 (小圓點) -->
+    <path
+        android:fillColor="#FFD700"   
+        android:pathData="M44,32 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"/>
+</vector>
