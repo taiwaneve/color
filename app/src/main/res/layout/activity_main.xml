@@ -28,6 +28,7 @@
         <TextView
             android:id="@+id/statusText"
             android:text="歡迎來到顏色記憶遊戲！"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:gravity="center"
             android:layout_width="match_parent"

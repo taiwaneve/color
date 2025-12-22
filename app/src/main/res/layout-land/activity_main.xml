@@ -38,6 +38,7 @@
             android:id="@+id/statusText"
             android:text="歡迎來到顏色記憶遊戲！"
             android:textSize="18sp"
+            android:textColor="#FFFFFF"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
