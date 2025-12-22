@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 顏色顯示區 -->
+    <!-- 顏色顯示區：上半部佔據大部分 -->
     <TextView
         android:id="@+id/colorTextView"
         android:text="顏色顯示區"
@@ -12,68 +12,75 @@
         android:gravity="center"
         android:background="#D3D3D3"
         android:layout_width="match_parent"
-        android:layout_height="200dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="3"/>
 
-    <!-- 狀態文字（遊戲提示） -->
-    <TextView
-        android:id="@+id/statusText"
-        android:text="歡迎來到顏色記憶遊戲！"
-        android:textSize="20sp"
-        android:gravity="center"
+    <!-- 中間留空間：放提示文字、生命值、按鈕 -->
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
-
-    <!-- 生命值顯示（置中，放在提示文字下方） -->
-    <TextView
-        android:id="@+id/livesText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="生命值：3"
-        android:textSize="18sp"
-        android:textColor="#FFFFFF"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="center"
         android:layout_marginTop="8dp"
-        android:visibility="gone"/>
+        android:layout_marginBottom="8dp">
 
-    <!-- 開始遊戲按鈕 -->
-    <Button
-        android:id="@+id/btnStart"
-        android:text="開始遊戲"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="12dp"/>
+        <TextView
+            android:id="@+id/statusText"
+            android:text="歡迎來到顏色記憶遊戲！"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <!-- 再玩一次按鈕 -->
-    <Button
-        android:id="@+id/btnRetry"
-        android:text="再玩一次"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="12dp"
-        android:visibility="gone"/>
+        <TextView
+            android:id="@+id/livesText"
+            android:text="生命值：3"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"/>
 
-    <!-- 回到主選單按鈕 -->
-    <Button
-        android:id="@+id/btnBackMenu"
-        android:text="回到主選單"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="12dp"
-        android:visibility="gone"/>
+        <Button
+            android:id="@+id/btnStart"
+            android:text="開始遊戲"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"/>
 
-    <!-- 四個顏色塊 -->
+        <Button
+            android:id="@+id/btnRetry"
+            android:text="再玩一次"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnBackMenu"
+            android:text="回到主選單"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- 四個顏色塊：下半部幾乎占滿 -->
     <GridLayout
         android:id="@+id/colorGrid"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:columnCount="2"
         android:rowCount="2"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
         android:padding="8dp">
 
         <View
@@ -83,7 +90,7 @@
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:background="#FF0000"
-            android:layout_margin="6dp"/>
+            android:layout_margin="8dp"/>
 
         <View
             android:id="@+id/blockYellow"
@@ -92,7 +99,7 @@
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:background="#FFFF00"
-            android:layout_margin="6dp"/>
+            android:layout_margin="8dp"/>
 
         <View
             android:id="@+id/blockBlue"
@@ -101,7 +108,7 @@
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:background="#0000FF"
-            android:layout_margin="6dp"/>
+            android:layout_margin="8dp"/>
 
         <View
             android:id="@+id/blockGreen"
@@ -110,6 +117,6 @@
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             android:background="#00FF00"
-            android:layout_margin="6dp"/>
+            android:layout_margin="8dp"/>
     </GridLayout>
 </LinearLayout>
